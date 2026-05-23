@@ -6,22 +6,27 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      # 强制启用 Node.js 24 → 彻底消除 Node.js 20 弃用警告
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      ACTIONS_RUNNER_DEBUG: false
+      ACTIONS_STEP_DEBUG: false
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        # 去掉 cache: gradle → 解决 400 错误
+      - uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
 
-    - name: Build with Gradle
-      run: ./buildAndGenJar.bat ec
+      - name: Build with Gradle
+        run: ./buildAndGenJar.bat ec
 
-    - name: Update spider jar
-      uses: EndBug/add-and-commit@v9
-      with:
-        default_author: github_actions
-        message: 'update spider jar'
-        add: './jar/custom_spider.jar ./jar/custom_spider.jar.md5'
+      - name: Update spider jar
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: 'update spider jar'
+          add: './jar/custom_spider.jar ./jar/custom_spider.jar.md5'
+          push: true
